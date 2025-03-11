@@ -1,5 +1,6 @@
 package com.cnpmnc.roms.mapper;
 
+import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
 import com.cnpmnc.roms.entity.Lecturer;
 
@@ -14,12 +15,13 @@ public class LecturerMapper {
                 lecturer.getDepartment());
     }
 
-    public static Lecturer mapToLecturer(LecturerDto lecturerDto) {
+    public static Lecturer mapToLecturer(LecturerCreationDto lecturerDto) {
         Lecturer lecturer = new Lecturer();
         lecturer.setId(lecturerDto.getId());
         lecturer.setFirstName(lecturerDto.getFirstName());
         lecturer.setLastName(lecturerDto.getLastName());
         lecturer.setEmail(lecturerDto.getEmail());
+        lecturer.setPassword(lecturerDto.getPassword());
         lecturer.setDepartment(lecturerDto.getDepartment());
         return lecturer;
 

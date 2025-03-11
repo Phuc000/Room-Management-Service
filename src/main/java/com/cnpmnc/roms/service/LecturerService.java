@@ -1,11 +1,12 @@
 package com.cnpmnc.roms.service;
 
+import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
 
 import java.util.List;
 
 public interface LecturerService {
-    LecturerDto createLecturer(LecturerDto lecturerDto);
+    LecturerDto createLecturer(LecturerCreationDto lecturerDto);
 
     List<LecturerDto> getAllLecturers();
 

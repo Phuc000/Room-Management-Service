@@ -1,5 +1,6 @@
 package com.cnpmnc.roms.controller;
 
+import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class LecturerController {
     private final LecturerService lecturerService;
 
     @PostMapping
-    public ResponseEntity<LecturerDto> createLecturer(@RequestBody LecturerDto lecturerDto) {
+    public ResponseEntity<LecturerDto> createLecturer(@RequestBody LecturerCreationDto lecturerDto) {
         LecturerDto createdLecturer = lecturerService.createLecturer(lecturerDto);
         return new ResponseEntity<>(createdLecturer, HttpStatus.CREATED);
     }

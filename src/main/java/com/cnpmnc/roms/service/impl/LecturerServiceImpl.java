@@ -1,5 +1,6 @@
 package com.cnpmnc.roms.service.impl;
 
+import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
 import com.cnpmnc.roms.entity.Lecturer;
 import com.cnpmnc.roms.exception.ResourceNotFoundException;
@@ -18,8 +19,9 @@ public class LecturerServiceImpl implements LecturerService {
 
     private final LecturerRepository lecturerRepository;
     @Override
-    public LecturerDto createLecturer(LecturerDto lecturerDto) {
+    public LecturerDto createLecturer(LecturerCreationDto lecturerDto) {
 
+        // todo: hash password
         Lecturer lecturer = LecturerMapper.mapToLecturer(lecturerDto);
         Lecturer savedLecturer = lecturerRepository.save(lecturer);
         return LecturerMapper.mapToLecturerDto(savedLecturer);
