@@ -7,7 +7,10 @@ import com.cnpmnc.roms.entity.Lecturer;
 import com.cnpmnc.roms.mapper.LecturerMapper;
 import com.cnpmnc.roms.repository.LecturerRepository;
 import com.cnpmnc.roms.security.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,7 +34,10 @@ public class AuthController {
     JwtUtil jwtUtil;
 
     @PostMapping("/signin")
-    public String authenticateLecturer(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<String> authenticateLecturer(
+            @RequestBody AuthRequest authRequest,
+            HttpServletResponse response
+    ) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getEmail(),
@@ -39,7 +45,15 @@ public class AuthController {
                 )
         );
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return jwtUtil.generateToken(userDetails.getUsername());
+        String token = jwtUtil.generateToken(userDetails.getUsername());
+
+        Cookie cookie = new Cookie("CredentialCookie", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Login successful!");
     }
 
     @PostMapping("/lecturer/signup")
