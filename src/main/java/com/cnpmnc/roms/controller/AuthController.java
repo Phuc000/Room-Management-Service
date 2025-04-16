@@ -66,4 +66,15 @@ public class AuthController {
         lecturerRepository.save(lecturer);
         return "Lecturer registered successfully";
     }
+
+    @PostMapping("/signout")
+    public ResponseEntity<String> signOut(HttpServletResponse response) {
+        Cookie cookie = new Cookie("CredentialCookie", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Signout successful!");
+    }
 }
