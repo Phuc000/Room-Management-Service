@@ -73,6 +73,8 @@ public class WebSecurityConfig {
                                 "/api/roomschedules/**",
                                 "/api/lecturers/**"
                         ).permitAll()
+                        .requestMatchers(
+                            "/api/test/lecturer").hasAuthority("ROLE_LECTURER")
                         .anyRequest().authenticated()
             );
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

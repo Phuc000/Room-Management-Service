@@ -45,7 +45,7 @@ public class AuthController {
                 )
         );
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(userDetails.getUsername());
+        String token = jwtUtil.generateToken(userDetails);
 
         Cookie cookie = new Cookie("CredentialCookie", token);
         cookie.setHttpOnly(true);

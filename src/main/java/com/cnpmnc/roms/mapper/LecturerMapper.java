@@ -3,6 +3,7 @@ package com.cnpmnc.roms.mapper;
 import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
 import com.cnpmnc.roms.entity.Lecturer;
+import com.cnpmnc.roms.entity.Role;
 
 public class LecturerMapper {
 
@@ -23,6 +24,7 @@ public class LecturerMapper {
         lecturer.setEmail(lecturerDto.getEmail());
         lecturer.setPassword(lecturerDto.getPassword());
         lecturer.setDepartment(lecturerDto.getDepartment());
+        lecturer.setRole(Role.LECTURER);
         return lecturer;
 
     }

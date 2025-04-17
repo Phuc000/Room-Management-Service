@@ -1,7 +1,9 @@
 package com.cnpmnc.roms.security;
 
+import com.cnpmnc.roms.entity.Role;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -16,9 +18,10 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long EXPIRATION;
 
-    public String generateToken(String email) {
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(userDetails.getUsername())
+                .claim("role", userDetails.getAuthorities())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -27,6 +30,10 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public Date extractExpiration(String token) {
