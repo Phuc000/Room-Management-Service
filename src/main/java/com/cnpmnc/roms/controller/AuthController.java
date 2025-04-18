@@ -1,11 +1,15 @@
 package com.cnpmnc.roms.controller;
 
-
 import com.cnpmnc.roms.dto.AuthRequest;
 import com.cnpmnc.roms.dto.LecturerCreationDto;
+import com.cnpmnc.roms.dto.StudentCreationDto;
 import com.cnpmnc.roms.entity.Lecturer;
+import com.cnpmnc.roms.entity.Student;
 import com.cnpmnc.roms.mapper.LecturerMapper;
+import com.cnpmnc.roms.mapper.StudentMapper;
 import com.cnpmnc.roms.repository.LecturerRepository;
+import com.cnpmnc.roms.repository.StudentRepository;
+import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +32,10 @@ public class AuthController {
     AuthenticationManager authenticationManager;
     @Autowired
     LecturerRepository lecturerRepository;
+    @Autowired
+    StudentRepository studentRepository;
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     PasswordEncoder encoder;
     @Autowired
@@ -58,13 +66,24 @@ public class AuthController {
 
     @PostMapping("/lecturer/signup")
     public String registerLecturer(@RequestBody LecturerCreationDto lecturerCreationDto) {
-        if (!lecturerRepository.findByEmail(lecturerCreationDto.getEmail()).isEmpty()) {
+        if (userRepository.existsByEmail(lecturerCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Lecturer lecturer = LecturerMapper.mapToLecturer(lecturerCreationDto);
         lecturer.setPassword(encoder.encode(lecturer.getPassword()));
         lecturerRepository.save(lecturer);
         return "Lecturer registered successfully";
+    }
+
+    @PostMapping("/student/signup")
+    public String registerStudent(@RequestBody StudentCreationDto studentCreationDto) {
+        if (userRepository.existsByEmail(studentCreationDto.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        Student student = StudentMapper.mapToStudent(studentCreationDto);
+        student.setPassword(encoder.encode(student.getPassword()));
+        studentRepository.save(student);
+        return "Student registered successfully";
     }
 
     @PostMapping("/signout")

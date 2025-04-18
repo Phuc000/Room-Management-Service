@@ -12,7 +12,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "users")
 public abstract class BaseUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

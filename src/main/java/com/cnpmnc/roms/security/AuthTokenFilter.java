@@ -1,6 +1,6 @@
 package com.cnpmnc.roms.security;
 
-import com.cnpmnc.roms.service.LecturerDetailsService;
+import com.cnpmnc.roms.service.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtils;
 
     @Autowired
-    private LecturerDetailsService lecturerDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -36,7 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateToken(jwt)) {
                 String username = jwtUtils.extractUsername(jwt);
 
-                UserDetails userDetails = lecturerDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
