@@ -2,12 +2,16 @@ package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.AuthRequest;
 import com.cnpmnc.roms.dto.LecturerCreationDto;
+import com.cnpmnc.roms.dto.StaffCreationDto;
 import com.cnpmnc.roms.dto.StudentCreationDto;
 import com.cnpmnc.roms.entity.Lecturer;
+import com.cnpmnc.roms.entity.Staff;
 import com.cnpmnc.roms.entity.Student;
 import com.cnpmnc.roms.mapper.LecturerMapper;
+import com.cnpmnc.roms.mapper.StaffMapper;
 import com.cnpmnc.roms.mapper.StudentMapper;
 import com.cnpmnc.roms.repository.LecturerRepository;
+import com.cnpmnc.roms.repository.StaffRepository;
 import com.cnpmnc.roms.repository.StudentRepository;
 import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
@@ -34,6 +38,8 @@ public class AuthController {
     LecturerRepository lecturerRepository;
     @Autowired
     StudentRepository studentRepository;
+    @Autowired
+    StaffRepository staffRepository;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -84,6 +90,17 @@ public class AuthController {
         student.setPassword(encoder.encode(student.getPassword()));
         studentRepository.save(student);
         return "Student registered successfully";
+    }
+
+    @PostMapping("/staff/signup")
+    public String registerStaff(@RequestBody StaffCreationDto staffCreationDto) {
+        if (userRepository.existsByEmail(staffCreationDto.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        Staff staff = StaffMapper.mapToStaff(staffCreationDto);
+        staff.setPassword(encoder.encode(staff.getPassword()));
+        staffRepository.save(staff);
+        return "Staff registered successfully";
     }
 
     @PostMapping("/signout")
