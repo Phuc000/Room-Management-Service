@@ -11,7 +11,8 @@ public class RoomMapper {
                 room.getName(),
                 room.getNumber(),
                 room.getFloor(),
-                room.getBuilding());
+                room.getBuilding(),
+                room.getCampus());
     }
 
     public static Room mapToRoom(RoomDto roomDto) {
@@ -20,6 +21,7 @@ public class RoomMapper {
                 roomDto.getName(),
                 roomDto.getNumber(),
                 roomDto.getFloor(),
-                roomDto.getBuilding());
+                roomDto.getBuilding(),
+                roomDto.getCampus());
     }
 }

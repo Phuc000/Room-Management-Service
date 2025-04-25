@@ -28,15 +28,18 @@ public class Room {
 
     private String building;
 
+    private String campus;
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomSchedule> roomSchedules;
 
-    public Room(Long id, String name, Integer number, Integer floor, String building) {
+    public Room(Long id, String name, Integer number, Integer floor, String building, String campus) {
         this.id = id;
         this.name = name;
         this.number = number;
         this.floor = floor;
         this.building = building;
+        this.campus = campus;
     }
 
 }
