@@ -18,6 +18,7 @@ public class RoomScheduleDto {
     private Long id;
     private Long roomId;
     private Long lecturerId;
+    private Long subjectId;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;

@@ -31,6 +31,10 @@ public class RoomSchedule {
     @JoinColumn(name = "lecturer_id", referencedColumnName = "id", nullable = false)
     private Lecturer lecturer;
 
+    @ManyToOne
+    @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
+    private Subject subject;
+
     @Column(nullable = false)
     private LocalDate startDate;
 

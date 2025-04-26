@@ -4,11 +4,13 @@ import com.cnpmnc.roms.dto.RoomScheduleDto;
 import com.cnpmnc.roms.entity.Lecturer;
 import com.cnpmnc.roms.entity.Room;
 import com.cnpmnc.roms.entity.RoomSchedule;
+import com.cnpmnc.roms.entity.Subject;
 import com.cnpmnc.roms.exception.ResourceNotFoundException;
 import com.cnpmnc.roms.mapper.RoomScheduleMapper;
 import com.cnpmnc.roms.repository.LecturerRepository;
 import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.repository.RoomScheduleRepository;
+import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
     private RoomRepository roomRepository;
 
     @Autowired
+    private SubjectRepository subjectRepository;
+
+    @Autowired
     private LecturerRepository lecturerRepository;
 
     @Override
@@ -40,7 +45,9 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Lecturer not found with id " + roomScheduleDto.getLecturerId()));
         Room room = roomRepository.findById(roomScheduleDto.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id " + roomScheduleDto.getRoomId()));
-        RoomSchedule roomSchedule = RoomScheduleMapper.mapToRoomSchedule(roomScheduleDto, lecturer, room);
+        Subject subject = subjectRepository.findById(roomScheduleDto.getSubjectId())
+                .orElseThrow(() -> new ResourceNotFoundException("Subject not found with id " + roomScheduleDto.getSubjectId()));
+        RoomSchedule roomSchedule = RoomScheduleMapper.mapToRoomSchedule(roomScheduleDto, lecturer, room, subject);
         RoomSchedule savedRoomSchedule = roomScheduleRepository.save(roomSchedule);
         return RoomScheduleMapper.mapToRoomScheduleDto(savedRoomSchedule);
     }
