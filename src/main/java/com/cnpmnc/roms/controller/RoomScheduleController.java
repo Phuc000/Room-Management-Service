@@ -17,6 +17,7 @@ public class RoomScheduleController {
 
     @Autowired
     private RoomScheduleService roomScheduleService;
+    private
 
     @GetMapping
     public ResponseEntity<List<RoomScheduleDto>> getAllRoomSchedules() {
@@ -25,14 +26,22 @@ public class RoomScheduleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
+//    @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<RoomScheduleDto> createRoomSchedule(@RequestBody RoomScheduleDto roomScheduleDto) {
         RoomScheduleDto newRoomScheduleDto = roomScheduleService.createRoomSchedule(roomScheduleDto);
         return new ResponseEntity<>(newRoomScheduleDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+//    @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<RoomScheduleDto> getRoomScheduleById(@PathVariable Long id) {
+        RoomScheduleDto roomScheduleDto = roomScheduleService.getRoomScheduleById(id);
+        return ResponseEntity.ok(roomScheduleDto);
+    }
+
+    @PostMapping("/getroominfo")
+//    @PreAuthorize("hasRole('ROLE_LECTURER')")
+    public ResponseEntity<RoomScheduleDto> getRoomScheduleInfoById(@RequestBody Long id) {
         RoomScheduleDto roomScheduleDto = roomScheduleService.getRoomScheduleById(id);
         return ResponseEntity.ok(roomScheduleDto);
     }

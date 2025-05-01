@@ -35,19 +35,27 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
 
     @Override
     public RoomScheduleDto createRoomSchedule(RoomScheduleDto roomScheduleDto) {
+        System.out.println("This line");
         // Validate DTO
         if (roomScheduleDto.getDate() == null) {
             throw new IllegalArgumentException("Date, start session, and end session must not be null");
         }
-
+        System.out.println("This line");
         Lecturer lecturer = lecturerRepository.findById(roomScheduleDto.getLecturerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Lecturer not found with id " + roomScheduleDto.getLecturerId()));
+        System.out.println("This line");
+
         Room room = roomRepository.findById(roomScheduleDto.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id " + roomScheduleDto.getRoomId()));
+        System.out.println("This line");
+
         Subject subject = subjectRepository.findById(roomScheduleDto.getSubjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found with id " + roomScheduleDto.getSubjectId()));
+        System.out.println("This line");
         RoomSchedule roomSchedule = RoomScheduleMapper.mapToRoomSchedule(roomScheduleDto, lecturer, room, subject);
+        System.out.println("This line");
         RoomSchedule savedRoomSchedule = roomScheduleRepository.save(roomSchedule);
+        System.out.println("This line");
         return RoomScheduleMapper.mapToRoomScheduleDto(savedRoomSchedule);
     }
 
