@@ -36,9 +36,8 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
     @Override
     public RoomScheduleDto createRoomSchedule(RoomScheduleDto roomScheduleDto) {
         // Validate DTO
-        if(roomScheduleDto.getStartDate().isAfter(roomScheduleDto.getEndDate()) ||
-                roomScheduleDto.getStartTime().isAfter(roomScheduleDto.getEndTime())) {
-            throw new IllegalArgumentException("Invalid date or time range");
+        if (roomScheduleDto.getDate() == null) {
+            throw new IllegalArgumentException("Date, start session, and end session must not be null");
         }
 
         Lecturer lecturer = lecturerRepository.findById(roomScheduleDto.getLecturerId())
@@ -72,11 +71,9 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         RoomSchedule roomSchedule = roomScheduleRepository.findById(id)
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Room schedule not found with id " + id));
-        roomSchedule.setStartDate(updatedRoomScheduleDto.getStartDate());
-        roomSchedule.setEndDate(updatedRoomScheduleDto.getEndDate());
-        roomSchedule.setStartTime(updatedRoomScheduleDto.getStartTime());
-        roomSchedule.setEndTime(updatedRoomScheduleDto.getEndTime());
-        roomSchedule.setWeekdays(updatedRoomScheduleDto.getWeekdays());
+        roomSchedule.setDate(updatedRoomScheduleDto.getDate());
+        roomSchedule.setStartSession(updatedRoomScheduleDto.getStartSession());
+        roomSchedule.setEndSession(updatedRoomScheduleDto.getEndSession());
         RoomSchedule updatedRoomSchedule = roomScheduleRepository.save(roomSchedule);
         return RoomScheduleMapper.mapToRoomScheduleDto(updatedRoomSchedule);
     }

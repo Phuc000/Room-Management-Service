@@ -36,19 +36,12 @@ public class RoomSchedule {
     private Subject subject;
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private LocalDate date;
 
     @Column(nullable = false)
-    private LocalDate endDate;
+    private int startSession;
 
     @Column(nullable = false)
-    private LocalTime startTime;
+    private int endSession;
 
-    @Column(nullable = false)
-    private LocalTime endTime;
-
-    @ElementCollection
-    @CollectionTable(name = "room_schedule_weekdays", joinColumns = @JoinColumn(name = "room_schedule_id"))
-    @Column(name = "weekday")
-    private Set<DayOfWeek> weekdays;
 }

@@ -14,21 +14,17 @@ public class RoomScheduleMapper {
                 roomSchedule.getRoom().getId(),
                 roomSchedule.getLecturer().getId(),
                 roomSchedule.getSubject().getId(),
-                roomSchedule.getStartDate(),
-                roomSchedule.getEndDate(),
-                roomSchedule.getStartTime(),
-                roomSchedule.getEndTime(),
-                roomSchedule.getWeekdays());
+                roomSchedule.getDate(),
+                roomSchedule.getStartSession(),
+                roomSchedule.getEndSession());
     }
 
     public static RoomSchedule mapToRoomSchedule(RoomScheduleDto roomScheduleDto, Lecturer lecturer, Room room, Subject subject) {
         RoomSchedule roomSchedule = new RoomSchedule();
         roomSchedule.setId(roomScheduleDto.getId());
-        roomSchedule.setStartTime(roomScheduleDto.getStartTime());
-        roomSchedule.setEndTime(roomScheduleDto.getEndTime());
-        roomSchedule.setStartDate(roomScheduleDto.getStartDate());
-        roomSchedule.setEndDate(roomScheduleDto.getEndDate());
-        roomSchedule.setWeekdays(roomScheduleDto.getWeekdays());
+        roomSchedule.setDate(roomScheduleDto.getDate());
+        roomSchedule.setStartSession(roomScheduleDto.getStartSession());
+        roomSchedule.setEndSession(roomScheduleDto.getEndSession());
 
         roomSchedule.setLecturer(lecturer);
         roomSchedule.setRoom(room);
