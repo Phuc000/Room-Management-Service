@@ -2,13 +2,13 @@ package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.LecturerCreationDto;
 import com.cnpmnc.roms.dto.LecturerDto;
+import com.cnpmnc.roms.service.LecturerService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.cnpmnc.roms.service.LecturerService;
 
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
