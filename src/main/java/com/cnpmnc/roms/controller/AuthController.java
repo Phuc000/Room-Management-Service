@@ -23,17 +23,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,7 +55,44 @@ public class AuthController {
     @Autowired
     JwtUtil jwtUtil;
 
-    @PostMapping("/api/login/guest")
+    @GetMapping("/user")
+    public ResponseEntity<?> getProfile(@AuthenticationPrincipal BaseUser user) {
+        if (user != null) {
+            // Direct access to your user object
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", user.getId());
+            userInfo.put("username", user.getEmail());
+            userInfo.put("password", "*****"); // Do not expose password
+            userInfo.put("displayname", user.getFirstName() + " " + user.getLastName());
+            userInfo.put("isGuest", false);
+            
+            // Check type for specific properties
+            if (user instanceof Lecturer) {
+                userInfo.put("role", "lecturer");
+            } else if (user instanceof Student) {
+                userInfo.put("role", "student");
+            } else if (user instanceof Staff) {
+                userInfo.put("role", "staff");
+            }
+            
+            return ResponseEntity.ok(userInfo);
+        }
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> signOut(HttpServletResponse response) {
+        Cookie cookie = new Cookie("CredentialCookie", null); // This the right coockie?
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Logout successful!");
+    }
+
+    @PostMapping("/login/guest")
     public ResponseEntity<?> authenticateGuest(HttpServletResponse response) {
         Map<String, Object> guestResponse = new HashMap<>();
         guestResponse.put("isGuest", true);
@@ -62,7 +101,7 @@ public class AuthController {
         return ResponseEntity.ok(guestResponse);
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateLecturer(
             @RequestBody AuthRequest authRequest,
             HttpServletResponse response
@@ -160,16 +199,5 @@ public class AuthController {
         staff.setPassword(encoder.encode(staff.getPassword()));
         staffRepository.save(staff);
         return "Staff registered successfully";
-    }
-
-    @PostMapping("/signout")
-    public ResponseEntity<String> signOut(HttpServletResponse response) {
-        Cookie cookie = new Cookie("CredentialCookie", null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
-
-        response.addCookie(cookie);
-        return ResponseEntity.ok("Signout successful!");
     }
 }
