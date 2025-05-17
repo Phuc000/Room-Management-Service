@@ -19,9 +19,7 @@ public class RoomScheduleDto {
     private Long roomId;
     private Long lecturerId;
     private Long subjectId;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private Set<DayOfWeek> weekdays;
+    private LocalDate date;
+    private int startSession;
+    private int endSession;
 }
