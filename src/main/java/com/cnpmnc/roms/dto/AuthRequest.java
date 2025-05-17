@@ -9,10 +9,3 @@ public class AuthRequest {
     private String username;
     private String password;
 }
-
-@Getter
-@Setter
-public class UserResponse {
-    private String username;
-    private String password;
-}
