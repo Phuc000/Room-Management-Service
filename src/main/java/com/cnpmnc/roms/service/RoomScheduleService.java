@@ -1,8 +1,9 @@
 package com.cnpmnc.roms.service;
 
 import com.cnpmnc.roms.dto.RoomScheduleDto;
-
+import java.time.LocalDate;
 import java.util.List;
+
 
 public interface RoomScheduleService {
 
@@ -15,4 +16,23 @@ public interface RoomScheduleService {
     RoomScheduleDto updateRoomSchedule(Long id, RoomScheduleDto updatedRoomScheduleDto);
 
     void deleteRoomSchedule(Long id);
+
+    List<RoomScheduleDto> getSchedulesByDate(LocalDate date);
+    
+    List<RoomScheduleDto> getSchedulesByDateRange(LocalDate startDate, LocalDate endDate);
+    
+    List<RoomScheduleDto> getSchedulesByRoomAndDateRange(Long roomId, LocalDate startDate, LocalDate endDate);
+    
+    List<RoomScheduleDto> getSchedulesByBuildingAndDateRange(String building, LocalDate startDate, LocalDate endDate);
+    
+    List<RoomScheduleDto> getSchedulesByDateAndSessionRange(LocalDate date, int startSession, int endSession);
+    
+    List<RoomScheduleDto> getSchedulesByLecturerId(Long lecturerId);
+
+    List<RoomScheduleDto> getSchedulesByLecturerIdAndDateRange(Long lecturerId, LocalDate startDate, LocalDate endDate);
+
+    List<RoomScheduleDto> filterSchedules(
+        Long roomId, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
+        LocalDate startDate, LocalDate endDate, Integer startSession, Integer endSession,
+        int page, int size);
 }
