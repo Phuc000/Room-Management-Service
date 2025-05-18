@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -19,11 +20,11 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
+    @Transactional
     public RoomDto createRoom(RoomDto roomDto) {
         Room room = RoomMapper.mapToRoom(roomDto);
         Room newRoom = roomRepository.save(room);
         return RoomMapper.mapToRoomDto(newRoom);
-
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.cnpmnc.roms.service;
 
 import com.cnpmnc.roms.dto.RoomScheduleDto;
+import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDate;
 import java.util.List;
 
 
 public interface RoomScheduleService {
 
+    @Transactional
     RoomScheduleDto createRoomSchedule(RoomScheduleDto roomScheduleDto);
 
     List<RoomScheduleDto> getAllRoomSchedules();
@@ -35,4 +38,10 @@ public interface RoomScheduleService {
         Long roomId, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
         LocalDate startDate, LocalDate endDate, Integer startSession, Integer endSession,
         int page, int size);
+
+    List<Integer> getAvailableTimeOfRoom(LocalDate date, Long id);
+
+    List<RoomScheduleDto> getRoomScheduleByLecturerId(Long lecturerId);
+
+    Boolean isAvailableTime(Long lecturerId, LocalDate date, Long roomId, int startSession, int endSession);
 }
