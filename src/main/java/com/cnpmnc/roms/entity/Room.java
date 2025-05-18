@@ -33,8 +33,8 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomSchedule> roomSchedules;
 
-    public Room(Long id, String name, Integer number, Integer floor, String building, String campus) {
-        this.id = id;
+    public Room(String name, Integer number, Integer floor, String building, String campus) {
+//        this.id = id;
         this.name = name;
         this.number = number;
         this.floor = floor;

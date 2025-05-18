@@ -22,7 +22,7 @@ public class RoomController {
         return new ResponseEntity<>(roomService.getAllRooms(), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<RoomDto> createRoom(@RequestBody RoomDto roomDto) {
         RoomDto newRoomDto = roomService.createRoom(roomDto);
         return new ResponseEntity<>(newRoomDto, HttpStatus.CREATED);

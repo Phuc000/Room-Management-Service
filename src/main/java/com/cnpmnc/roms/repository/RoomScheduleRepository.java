@@ -1,5 +1,6 @@
 package com.cnpmnc.roms.repository;
 
+import com.cnpmnc.roms.entity.Room;
 import com.cnpmnc.roms.entity.RoomSchedule;
 import java.time.LocalDate;
 import java.util.List;
@@ -7,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDate;
+import java.util.List;
 
 
 public interface RoomScheduleRepository extends JpaRepository<RoomSchedule, Long>, JpaSpecificationExecutor<RoomSchedule> {
@@ -14,7 +17,11 @@ public interface RoomScheduleRepository extends JpaRepository<RoomSchedule, Long
     List<RoomSchedule> findByRoomId(Long roomId);
 
     List<RoomSchedule> findByLecturerId(Long lecturerId);
-    
+
+    List<RoomSchedule> findByDateAndRoom(LocalDate date, Room room);
+
+    List<RoomSchedule> findByLecturerIdAndDate(Long lecturerId, LocalDate date);
+
     List<RoomSchedule> findByDate(LocalDate date);
     
     List<RoomSchedule> findByDateBetween(LocalDate startDate, LocalDate endDate);

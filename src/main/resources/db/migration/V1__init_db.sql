@@ -67,3 +67,5 @@ VALUES
 (2, 'TUESDAY'),
 (2, 'THURSDAY')
 ON CONFLICT (id) DO NOTHING;
+
+Select * from rooms;
