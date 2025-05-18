@@ -3,6 +3,7 @@ package com.cnpmnc.roms.controller;
 import com.cnpmnc.roms.dto.BookingRequestDto;
 import com.cnpmnc.roms.dto.RoomScheduleDto;
 import com.cnpmnc.roms.entity.RoomSchedule;
+import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import com.cnpmnc.roms.service.RoomScheduleService;
@@ -24,6 +25,8 @@ public class RoomScheduleController {
     @Autowired
     private RoomScheduleService roomScheduleService;
 
+    @Autowired
+    private RoomRepository roomRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -57,15 +60,18 @@ public class RoomScheduleController {
     @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<String> bookRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
-                                                           @RequestParam Long roomId,
                                                            @RequestParam int startSession,
-                                                           @RequestParam int endSession)
+                                                           @RequestParam int endSession,
+                                                           @RequestParam String campus,
+                                                           @RequestParam String building,
+                                                           @RequestParam String name)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long roomId = roomRepository.findByNameAndBuildingAndCampus(name, building, campus).getId();
         Boolean isAvailable = roomScheduleService.isAvailableTime(userRepository.findByEmail(userName).getId(),
                                                                     date, roomId, startSession, endSession);
         if (isAvailable)
-            return ResponseEntity.ok("Successfully booked!");
+            return ResponseEntity.ok("Success");
         else
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Schedule overlapped");
     }
@@ -76,8 +82,10 @@ public class RoomScheduleController {
                                                            @RequestBody BookingRequestDto bookingRequest)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long roomId = roomRepository.findByNameAndBuildingAndCampus(bookingRequest.getName(), bookingRequest.getBuilding(), bookingRequest.getCampus())
+                                    .getId();
         RoomScheduleDto roomScheduleDto = new RoomScheduleDto(null,
-                                                                bookingRequest.getRoomId(),
+                                                                roomId,
                                                                 userRepository.findByEmail(userName).getId(),
                                                                 bookingRequest.getSubjectId(),
                                                                 bookingRequest.getDate(),

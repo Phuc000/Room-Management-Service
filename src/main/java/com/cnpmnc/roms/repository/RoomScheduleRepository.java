@@ -14,7 +14,7 @@ public interface RoomScheduleRepository extends JpaRepository<RoomSchedule, Long
 
     List<RoomSchedule> findByLecturerId(Long lecturerId);
 
-    List<RoomSchedule> findByDateAndId(LocalDate date, Room room);
+    List<RoomSchedule> findByDateAndRoom(LocalDate date, Room room);
 
     List<RoomSchedule> findByLecturerIdAndDate(Long lecturerId, LocalDate date);
 }

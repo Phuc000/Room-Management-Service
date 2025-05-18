@@ -109,7 +109,7 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         Room room = roomRepository.findById(id)
                 .orElseThrow(()
                         -> new ResourceNotFoundException("No room found with id" + id));
-        List<RoomSchedule> roomSchedules = roomScheduleRepository.findByDateAndId(date, room);
+        List<RoomSchedule> roomSchedules = roomScheduleRepository.findByDateAndRoom(date, room);
         if (roomSchedules.isEmpty()) {
             throw new ResourceNotFoundException("Room schedule not found for room: " + id);
         }
@@ -130,6 +130,8 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
     public Boolean isAvailableTime(Long lecturerId, LocalDate date, Long roomId,  int startSession, int endSession)
     {
         List<RoomSchedule> roomSchedules = roomScheduleRepository.findByLecturerIdAndDate(lecturerId, date);
+        System.out.println(roomSchedules);
+
         List<Integer> list = new ArrayList<>();
 
         for (int i = 1; i <= 16; i++) {
@@ -146,16 +148,17 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
                 try {
                     list.remove(Integer.valueOf(j));
                 } catch (Exception e) {
-                    System.out.println("Log: This is overlaped schedule");
+                    System.out.println("Log: This is overlapped schedule");
                 }
             }
         }
         for (int i = startSession; i <= endSession; i++)
         {
+            if (!list.contains(i))
+                return false;
             try {
                 list.remove(Integer.valueOf(i));
             } catch (Exception e) {
-                System.out.println("Log: This is overlapped schedule");
                 return false;
             }
         }

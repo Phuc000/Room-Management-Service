@@ -10,7 +10,9 @@ import java.time.LocalDate;
 public class BookingRequestDto 
 {
     private LocalDate date;
-    private Long roomId;
+    private String name;
+    private String building;
+    private String campus;
     private Long subjectId;
     private int startSession;
     private int endSession;
