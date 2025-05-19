@@ -21,7 +21,7 @@ public class RoomScheduleMapper {
 
     public static RoomSchedule mapToRoomSchedule(RoomScheduleDto roomScheduleDto, Lecturer lecturer, Room room, Subject subject) {
         RoomSchedule roomSchedule = new RoomSchedule();
-        roomSchedule.setId(roomScheduleDto.getId());
+        // roomSchedule.setId(Long.valueOf("5"));
         roomSchedule.setDate(roomScheduleDto.getDate());
         roomSchedule.setStartSession(roomScheduleDto.getStartSession());
         roomSchedule.setEndSession(roomScheduleDto.getEndSession());
