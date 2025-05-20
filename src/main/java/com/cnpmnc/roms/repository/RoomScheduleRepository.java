@@ -49,7 +49,7 @@ public interface RoomScheduleRepository extends JpaRepository<RoomSchedule, Long
         @Param("endDate") LocalDate endDate
     );
 
-    List<RoomSchedule> findByDateAndId(LocalDate date, Room room);
+    List<RoomSchedule> findByDateAndRoom(LocalDate date, Room room);
 
     List<RoomSchedule> findByLecturerIdAndDate(Long lecturerId, LocalDate date);
 }

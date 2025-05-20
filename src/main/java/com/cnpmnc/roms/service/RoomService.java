@@ -12,7 +12,13 @@ public interface RoomService {
 
     RoomDto getRoomById(Long id);
 
+    List<String> getListBuildingByCampus(String campus);
+
+    List<String> getListNameByBuildingAndCampus(String building, String campus);
+
     RoomDto updateRoom(Long id, RoomDto updatedRoomDto);
 
     void deleteRoom(Long id);
+
+    RoomDto getIdByNameAndCampus(String name, String campus);
 }

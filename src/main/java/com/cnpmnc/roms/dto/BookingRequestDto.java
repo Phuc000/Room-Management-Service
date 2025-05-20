@@ -13,7 +13,7 @@ public class BookingRequestDto
     private String name;
     private String building;
     private String campus;
-    private Long subjectId;
+    private String subjectCode;
     private int startSession;
     private int endSession;
 }

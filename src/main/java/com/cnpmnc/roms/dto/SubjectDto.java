@@ -5,15 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomDto {
+public class SubjectDto {
     private Long id;
-    private String name;
-    private Integer number;
-    private Integer floor;
-    private String building;
-    private String campus;
+    private String subjectCode;
+    private String SubjectName;
 }

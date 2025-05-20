@@ -2,13 +2,20 @@ package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.BookingRequestDto;
 import com.cnpmnc.roms.dto.RoomScheduleDto;
+import com.cnpmnc.roms.entity.RoomSchedule;
+import com.cnpmnc.roms.entity.Subject;
 import com.cnpmnc.roms.repository.RoomRepository;
+import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+
+import com.cnpmnc.roms.service.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/roomschedules")
@@ -28,6 +37,12 @@ public class RoomScheduleController {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -59,18 +74,15 @@ public class RoomScheduleController {
 
     @GetMapping("/isAvailable")
     @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<String> bookRoomScheduleInfoById(HttpServletRequest request,
+    public ResponseEntity<String> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
                                                            @RequestParam int startSession,
-                                                           @RequestParam int endSession,
-                                                           @RequestParam String campus,
-                                                           @RequestParam String building,
-                                                           @RequestParam String name)
+                                                           @RequestParam int endSession)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long roomId = roomRepository.findByNameAndBuildingAndCampus(name, building, campus).getId();
+        System.out.println(userRepository.findByEmail(userName).getId());
         Boolean isAvailable = roomScheduleService.isAvailableTime(userRepository.findByEmail(userName).getId(),
-                                                                    date, roomId, startSession, endSession);
+                                                                    date, startSession, endSession);
         if (isAvailable)
             return ResponseEntity.ok("Success");
         else
@@ -79,16 +91,17 @@ public class RoomScheduleController {
 
     @PostMapping("/booking")
     @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<String> bookRoomScheduleInfoById(HttpServletRequest request,
-                                                           @RequestBody BookingRequestDto bookingRequest)
+    public ResponseEntity<String> bookRoomSchedule(HttpServletRequest request,
+                                                   @RequestBody BookingRequestDto bookingRequest)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Long roomId = roomRepository.findByNameAndBuildingAndCampus(bookingRequest.getName(), bookingRequest.getBuilding(), bookingRequest.getCampus())
                                     .getId();
+        Long subjectId = roomScheduleService.getIdFromSubjectCode(bookingRequest.getSubjectCode());
         RoomScheduleDto roomScheduleDto = new RoomScheduleDto(null,
                                                                 roomId,
                                                                 userRepository.findByEmail(userName).getId(),
-                                                                bookingRequest.getSubjectId(),
+                                                                subjectId,
                                                                 bookingRequest.getDate(),
                                                                 bookingRequest.getStartSession(),
                                                                 bookingRequest.getEndSession());
@@ -116,12 +129,41 @@ public class RoomScheduleController {
 //    }
 
     @GetMapping("/available/{date}")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date, @RequestParam("id") Long id) {
+    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
+                                                                    @RequestParam("campus") String campus,
+                                                                    @RequestParam("name") String name)
+    {
+        Long id = roomService.getIdByNameAndCampus(name, campus).getId();
+        System.out.println(id);
+
         return ResponseEntity.ok(roomScheduleService.getAvailableTimeOfRoom(date, id));
     }
 
+    @GetMapping("/buildingByCampus")
+    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam("campus") String campus)
+    {
+        return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
+    }
 
+    @GetMapping("/nameByBuilding")
+    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
+                                                           @RequestParam("campus") String campus)
+    {
+        return ResponseEntity.ok(roomService.getListNameByBuildingAndCampus(building, campus));
+    }
+
+    @GetMapping("/getsubject/{subjectCode}")
+    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    public ResponseEntity<String> getSubjectName (@PathVariable("subjectCode") String subjectCode)
+    {
+        Optional<Subject> subject = subjectRepository.findBySubjectCode(subjectCode);
+
+        return subject.map(value -> ResponseEntity.ok(value.getSubjectName())).orElseGet(()
+                -> ResponseEntity.status(HttpStatus.ACCEPTED).body("Not exist this subject"));
+    }
 
     // @GetMapping("/date/{date}")
     // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByDate(

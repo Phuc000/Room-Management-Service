@@ -43,5 +43,7 @@ public interface RoomScheduleService {
 
     List<RoomScheduleDto> getRoomScheduleByLecturerId(Long lecturerId);
 
-    Boolean isAvailableTime(Long lecturerId, LocalDate date, Long roomId, int startSession, int endSession);
+    Boolean isAvailableTime(Long lecturerId, LocalDate date, int startSession, int endSession);
+
+    Long getIdFromSubjectCode(String subjectId);
 }

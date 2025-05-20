@@ -7,6 +7,7 @@ import com.cnpmnc.roms.entity.RoomSchedule;
 import com.cnpmnc.roms.entity.Subject;
 import com.cnpmnc.roms.exception.ResourceNotFoundException;
 import com.cnpmnc.roms.mapper.RoomScheduleMapper;
+import com.cnpmnc.roms.mapper.SubjectMapper;
 import com.cnpmnc.roms.repository.LecturerRepository;
 import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.repository.RoomScheduleRepository;
@@ -14,12 +15,15 @@ import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -255,9 +259,9 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         Room room = roomRepository.findById(id)
                 .orElseThrow(()
                         -> new ResourceNotFoundException("No room found with id" + id));
-        List<RoomSchedule> roomSchedules = roomScheduleRepository.findByDateAndId(date, room);
+        List<RoomSchedule> roomSchedules = roomScheduleRepository.findByDateAndRoom(date, room);
         if (roomSchedules.isEmpty()) {
-            throw new ResourceNotFoundException("Room schedule not found for room: " + id);
+            return list;
         }
 
         List<RoomScheduleDto> roomSchedulesDtos = roomSchedules.stream().map(RoomScheduleMapper::mapToRoomScheduleDto)
@@ -273,7 +277,7 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
     }
 
     @Override
-    public Boolean isAvailableTime(Long lecturerId, LocalDate date, Long roomId,  int startSession, int endSession)
+    public Boolean isAvailableTime(Long lecturerId, LocalDate date, int startSession, int endSession)
     {
         List<RoomSchedule> roomSchedules = roomScheduleRepository.findByLecturerIdAndDate(lecturerId, date);
         List<Integer> list = new ArrayList<>();
@@ -292,12 +296,14 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
                 try {
                     list.remove(Integer.valueOf(j));
                 } catch (Exception e) {
-                    System.out.println("Log: This is overlaped schedule");
+                    System.out.println("Log: This is overlapped schedule");
                 }
             }
         }
         for (int i = startSession; i <= endSession; i++)
         {
+            if (!list.contains(i))
+                return false;
             try {
                 list.remove(Integer.valueOf(i));
             } catch (Exception e) {
@@ -306,6 +312,14 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
             }
         }
         return true;
+    }
+
+    @Override
+    public Long getIdFromSubjectCode(String subjectCode)
+    {
+        Subject subject = subjectRepository.findBySubjectCode(subjectCode)
+                                            .orElseThrow(() -> new ResourceNotFoundException("Subject not found with code " + subjectCode));
+        return SubjectMapper.mapToSubjectDto(subject).getId();
     }
 
 }

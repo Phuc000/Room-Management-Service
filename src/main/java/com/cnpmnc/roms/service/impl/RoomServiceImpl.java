@@ -4,6 +4,7 @@ import com.cnpmnc.roms.dto.RoomDto;
 import com.cnpmnc.roms.entity.Room;
 import com.cnpmnc.roms.exception.ResourceNotFoundException;
 import com.cnpmnc.roms.mapper.RoomMapper;
+import com.cnpmnc.roms.mapper.RoomScheduleMapper;
 import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.service.RoomService;
 import java.util.List;
@@ -62,4 +63,39 @@ public class RoomServiceImpl implements RoomService {
                         -> new ResourceNotFoundException("No room found with id" + id));
         roomRepository.deleteById(id);
     }
+
+    @Override
+    public List<String> getListBuildingByCampus(String campus)
+    {
+        List<Room> rooms = roomRepository.getBuildingByCampus(campus);
+        List<RoomDto> roomDtos = rooms.stream()
+                                        .map(RoomMapper::mapToRoomDto)
+                                        .collect(java.util.stream.Collectors.toList());
+        return roomDtos.stream()
+                .map(RoomDto::getBuilding)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getListNameByBuildingAndCampus(String building, String campus)
+    {
+        List<Room> rooms = roomRepository.getNameByBuildingAndCampus(building, campus);
+        List<RoomDto> roomDtos = rooms.stream()
+                .map(RoomMapper::mapToRoomDto)
+                .collect(java.util.stream.Collectors.toList());
+        return roomDtos.stream()
+                .map(RoomDto::getName)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RoomDto getIdByNameAndCampus(String name, String campus)
+    {
+        Room room = roomRepository.findByNameAndCampus(name, campus);
+
+        return RoomMapper.mapToRoomDto(room);
+
+    }
+
+
 }
