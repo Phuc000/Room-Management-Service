@@ -83,12 +83,19 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> signOut(HttpServletResponse response) {
-        Cookie cookie = new Cookie("CredentialCookie", null); // This the right coockie?
+        Cookie cookie = new Cookie("CredentialCookie", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
 
-        response.addCookie(cookie);
+        response.setHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue() 
+            + "; Max-Age=" + cookie.getMaxAge() 
+            + "; Path=" + cookie.getPath() 
+            + "; HttpOnly"
+            + "; SameSite=None; Secure");
+        
+        // response.addCookie(cookie);
+        
         return ResponseEntity.ok("Logout successful!");
     }
 
