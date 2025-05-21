@@ -1,6 +1,7 @@
 package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.BookingRequestDto;
+import com.cnpmnc.roms.dto.CampusDto;
 import com.cnpmnc.roms.dto.RoomScheduleDto;
 import com.cnpmnc.roms.entity.RoomSchedule;
 import com.cnpmnc.roms.entity.Subject;
@@ -10,8 +11,7 @@ import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import com.cnpmnc.roms.service.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,8 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/roomschedules")
@@ -63,7 +61,7 @@ public class RoomScheduleController {
 //        return new ResponseEntity<>(newRoomScheduleDto, HttpStatus.CREATED);
 //    }
 
-    @GetMapping("/getschedule")
+    @PostMapping("/getschedule")
     @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<List<RoomScheduleDto>> getRoomScheduleById() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -72,7 +70,7 @@ public class RoomScheduleController {
     }
 
 
-    @GetMapping("/isAvailable")
+    @PostMapping("/isAvailable")
     @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<String> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
@@ -128,7 +126,7 @@ public class RoomScheduleController {
 //        return ResponseEntity.ok(roomScheduleDto);
 //    }
 
-    @GetMapping("/available/{date}")
+    @PostMapping("/available/{date}")
     // @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
                                                                     @RequestParam("campus") String campus,
@@ -140,14 +138,14 @@ public class RoomScheduleController {
         return ResponseEntity.ok(roomScheduleService.getAvailableTimeOfRoom(date, id));
     }
 
-    @GetMapping("/buildingByCampus")
+    @PostMapping("/buildingByCampus")
     // @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam("campus") String campus)
+    public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam String campus)
     {
         return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
     }
 
-    @GetMapping("/nameByBuilding")
+    @PostMapping("/nameByBuilding")
     // @PreAuthorize("hasRole('ROLE_LECTURER')")
     public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
                                                            @RequestParam("campus") String campus)
@@ -155,14 +153,18 @@ public class RoomScheduleController {
         return ResponseEntity.ok(roomService.getListNameByBuildingAndCampus(building, campus));
     }
 
-    @GetMapping("/getsubject/{subjectCode}")
+    @PostMapping("/getsubject/{subjectCode}")
     // @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<String> getSubjectName (@PathVariable("subjectCode") String subjectCode)
+    public ResponseEntity<?> getSubjectName (@PathVariable("subjectCode") String subjectCode)
     {
         Optional<Subject> subject = subjectRepository.findBySubjectCode(subjectCode);
 
-        return subject.map(value -> ResponseEntity.ok(value.getSubjectName())).orElseGet(()
-                -> ResponseEntity.status(HttpStatus.ACCEPTED).body("Not exist this subject"));
+        if (subject.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Not exist this subject"));
+        }
+
+        return ResponseEntity.ok(Map.of("subjectName", subject.get().getSubjectName()));
     }
 
     // @GetMapping("/date/{date}")
