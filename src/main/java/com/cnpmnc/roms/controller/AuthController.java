@@ -18,16 +18,15 @@ import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -83,12 +83,19 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> signOut(HttpServletResponse response) {
-        Cookie cookie = new Cookie("CredentialCookie", null); // This the right coockie?
+        Cookie cookie = new Cookie("CredentialCookie", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
 
-        response.addCookie(cookie);
+        response.setHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue() 
+            + "; Max-Age=" + cookie.getMaxAge() 
+            + "; Path=" + cookie.getPath() 
+            + "; HttpOnly"
+            + "; SameSite=None; Secure");
+        
+        // response.addCookie(cookie);
+        
         return ResponseEntity.ok("Logout successful!");
     }
 
@@ -163,9 +170,14 @@ public class AuthController {
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
-        
-        response.addCookie(cookie);
-        response.setHeader("Set-Cookie","CredentialCookie=" + token + "; Path=/;  Secure; SameSite=None; Max-Age="+(60 * 60 * 24));
+
+        response.setHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue() 
+            + "; Max-Age=" + cookie.getMaxAge() 
+            + "; Path=" + cookie.getPath() 
+            + "; HttpOnly"
+            + "; SameSite=None; Secure");
+
+        // response.addCookie(cookie);  
         
         return ResponseEntity.ok(userResponse);
     }
