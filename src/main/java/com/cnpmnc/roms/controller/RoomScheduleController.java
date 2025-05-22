@@ -74,7 +74,7 @@ public class RoomScheduleController {
     }
 
 
-    @PostMapping("/isAvailable")
+    @GetMapping("/isAvailable")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
