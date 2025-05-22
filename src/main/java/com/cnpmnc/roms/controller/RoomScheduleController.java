@@ -104,7 +104,7 @@ public class RoomScheduleController {
 //        }
 //    }
 
-    @DeleteMapping("/deletebooking")
+    @DeleteMapping
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> deleteRoomSchedule(@RequestParam Long id)
     {
