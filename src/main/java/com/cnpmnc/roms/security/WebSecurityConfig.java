@@ -68,10 +68,10 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(
-                        "/api/auth/login/**"
+                        "/api/auth/**",
                         // "/api/test/all",
-                        // "/api/rooms/**",
-                        // "/api/roomschedules/**",
+                        // "/api/rooms/**"
+                        "/api/roomschedules/filter"
                         // "/api/lecturers/**"
                 ).permitAll()
                 .requestMatchers("/api/test/lecturer"
