@@ -41,12 +41,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("User authenticated: " + username);
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
+            System.out.println("Cannot set user authentication: " + e);
         }
         System.out.println("URI: " + request.getRequestURI());
-        Thread.dumpStack();
+        // Thread.dumpStack();
         filterChain.doFilter(request, response);
     }
 
@@ -58,6 +60,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 //        }
 
         if(request.getCookies() != null) {
+            System.out.println("Cookie detected !");
             for (var cookie : request.getCookies()) {
                 if (cookie.getName().equals("CredentialCookie")) {
                     return cookie.getValue();

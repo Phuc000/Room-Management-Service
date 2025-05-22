@@ -55,14 +55,14 @@ public class RoomScheduleController {
     }
 //
 //    @PostMapping
-//    @PreAuthorize("hasRole('ROLE_LECTURER')")
+//    @PreAuthorize("hasRole('LECTURER')")
 //    public ResponseEntity<RoomScheduleDto> createRoomSchedule(@RequestBody RoomScheduleDto roomScheduleDto) {
 //        RoomScheduleDto newRoomScheduleDto = roomScheduleService.createRoomSchedule(roomScheduleDto);
 //        return new ResponseEntity<>(newRoomScheduleDto, HttpStatus.CREATED);
 //    }
 
     @PostMapping("/getschedule")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<RoomScheduleDto>> getRoomScheduleById() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<RoomScheduleDto> roomScheduleDto = roomScheduleService.getRoomScheduleByLecturerId(userRepository.findByEmail(userName).getId());
@@ -71,7 +71,7 @@ public class RoomScheduleController {
 
 
     @PostMapping("/isAvailable")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<String> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
                                                            @RequestParam int startSession,
@@ -88,7 +88,7 @@ public class RoomScheduleController {
     }
 
     @PostMapping("/booking")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<String> bookRoomSchedule(HttpServletRequest request,
                                                    @RequestBody BookingRequestDto bookingRequest)
     {
@@ -113,21 +113,21 @@ public class RoomScheduleController {
 
 
 //    @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ROLE_LECTURER')")
+//    @PreAuthorize("hasRole('LECTURER')")
 //    public ResponseEntity<String> deleteRoomScheduleById(@PathVariable Long id) {
 //        roomScheduleService.deleteRoomSchedule(id);
 //        return new ResponseEntity<>("Room schedule deleted successfully!", HttpStatus.OK);
 //    }
 
 //    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ROLE_LECTURER')")
+//    @PreAuthorize("hasRole('LECTURER')")
 //    public ResponseEntity<RoomScheduleDto> updateRoomScheduleById(@PathVariable Long id, @RequestBody RoomScheduleDto updatedRoomScheduleDto) {
 //        RoomScheduleDto roomScheduleDto = roomScheduleService.updateRoomSchedule(id, updatedRoomScheduleDto);
 //        return ResponseEntity.ok(roomScheduleDto);
 //    }
 
     @PostMapping("/available/{date}")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
                                                                     @RequestParam("campus") String campus,
                                                                     @RequestParam("name") String name)
@@ -139,14 +139,14 @@ public class RoomScheduleController {
     }
 
     @PostMapping("/buildingByCampus")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam String campus)
     {
         return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
     }
 
     @PostMapping("/nameByBuilding")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
                                                            @RequestParam("campus") String campus)
     {
@@ -154,7 +154,7 @@ public class RoomScheduleController {
     }
 
     @PostMapping("/getsubject/{subjectCode}")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> getSubjectName (@PathVariable("subjectCode") String subjectCode)
     {
         Optional<Subject> subject = subjectRepository.findBySubjectCode(subjectCode);

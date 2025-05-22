@@ -115,7 +115,7 @@ public class AuthController {
         
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        
+            
         // Create response object with user information
         Map<String, Object> userResponse = new HashMap<>();
         
@@ -160,10 +160,12 @@ public class AuthController {
         
         Cookie cookie = new Cookie("CredentialCookie", token);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
         
         response.addCookie(cookie);
+        response.setHeader("Set-Cookie","CredentialCookie=" + token + "; Path=/;  Secure; SameSite=None; Max-Age="+(60 * 60 * 24));
         
         return ResponseEntity.ok(userResponse);
     }
