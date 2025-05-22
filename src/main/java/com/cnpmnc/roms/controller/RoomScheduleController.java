@@ -83,7 +83,7 @@ public class RoomScheduleController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("message", "Schedule overlapped"));
     }
 
-    @GetMapping("/booking")
+    @PostMapping("/booking")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<String> bookRoomSchedule(HttpServletRequest request,
                                                    @RequestBody BookingRequestDto bookingRequest)
