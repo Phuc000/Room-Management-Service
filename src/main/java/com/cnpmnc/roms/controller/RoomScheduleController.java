@@ -1,21 +1,17 @@
 package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.BookingRequestDto;
-import com.cnpmnc.roms.dto.CampusDto;
 import com.cnpmnc.roms.dto.RoomScheduleDto;
-import com.cnpmnc.roms.entity.RoomSchedule;
 import com.cnpmnc.roms.entity.Subject;
 import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import com.cnpmnc.roms.service.RoomScheduleService;
-import java.time.LocalDate;
-import java.util.*;
-
 import com.cnpmnc.roms.service.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,7 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/roomschedules")
@@ -72,7 +68,7 @@ public class RoomScheduleController {
 
     @PostMapping("/isAvailable")
     @PreAuthorize("hasRole('LECTURER')")
-    public ResponseEntity<String> checkRoomScheduleInfoById(HttpServletRequest request,
+    public ResponseEntity<Map<String, String>> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
                                                            @RequestParam int startSession,
                                                            @RequestParam int endSession)
@@ -82,9 +78,9 @@ public class RoomScheduleController {
         Boolean isAvailable = roomScheduleService.isAvailableTime(userRepository.findByEmail(userName).getId(),
                                                                     date, startSession, endSession);
         if (isAvailable)
-            return ResponseEntity.ok("Success");
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Available"));
         else
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Schedule overlapped");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("message", "Schedule overlapped"));
     }
 
     @PostMapping("/booking")
