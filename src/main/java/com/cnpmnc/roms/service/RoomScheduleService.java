@@ -46,4 +46,6 @@ public interface RoomScheduleService {
     Boolean isAvailableTime(Long lecturerId, LocalDate date, int startSession, int endSession);
 
     Long getIdFromSubjectCode(String subjectId);
+
+    void deleteScheduleByLecturerId(Long lecturerId, Long scheduleId);
 }

@@ -15,6 +15,7 @@ import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -322,4 +324,19 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         return SubjectMapper.mapToSubjectDto(subject).getId();
     }
 
+    @Override
+    public void deleteScheduleByLecturerId(Long lecturerId, Long scheduleId)
+    {
+        RoomSchedule roomSchedule = roomScheduleRepository.findById(scheduleId)
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("Room schedule not found with id " + scheduleId));
+        if (!lecturerId.equals(roomSchedule.getLecturer().getId()))
+        {
+            throw new InternalAuthenticationServiceException("Lecturer not authorized to delete this schedule");
+        }
+        else
+        {
+            roomScheduleRepository.deleteById(scheduleId);
+        }
+    }
 }

@@ -2,9 +2,11 @@ package com.cnpmnc.roms.controller;
 
 import com.cnpmnc.roms.dto.BookingRequestDto;
 import com.cnpmnc.roms.dto.CampusDto;
+import com.cnpmnc.roms.dto.DeleteRequestDto;
 import com.cnpmnc.roms.dto.RoomScheduleDto;
 import com.cnpmnc.roms.entity.RoomSchedule;
 import com.cnpmnc.roms.entity.Subject;
+import com.cnpmnc.roms.exception.ResourceNotFoundException;
 import com.cnpmnc.roms.repository.RoomRepository;
 import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.repository.UserRepository;
@@ -20,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +66,7 @@ public class RoomScheduleController {
 //    }
 
     @PostMapping("/getschedule")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<RoomScheduleDto>> getRoomScheduleById() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<RoomScheduleDto> roomScheduleDto = roomScheduleService.getRoomScheduleByLecturerId(userRepository.findByEmail(userName).getId());
@@ -71,25 +75,94 @@ public class RoomScheduleController {
 
 
     @PostMapping("/isAvailable")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<String> checkRoomScheduleInfoById(HttpServletRequest request,
+    @PreAuthorize("hasRole('LECTURER')")
+    public ResponseEntity<?> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
                                                            @RequestParam int startSession,
                                                            @RequestParam int endSession)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(userRepository.findByEmail(userName).getId());
         Boolean isAvailable = roomScheduleService.isAvailableTime(userRepository.findByEmail(userName).getId(),
                                                                     date, startSession, endSession);
         if (isAvailable)
-            return ResponseEntity.ok("Success");
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Success"));
         else
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Schedule overlapped");
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Schedule Overlapped"));
+    }
+
+//    @DeleteMapping("/deletebooking")
+//    @PreAuthorize("hasRole('LECTURER')")
+//    public ResponseEntity<?> deleteRoomSchedule(@RequestBody DeleteRequestDto deleteRequestDto)
+//    {
+//        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Long id = userRepository.findByEmail(userName).getId();
+//        try
+//        {
+//
+//        }
+//    }
+
+    @DeleteMapping("/deletebooking")
+    @PreAuthorize("hasRole('LECTURER')")
+    public ResponseEntity<?> deleteRoomSchedule(@RequestParam Long id)
+    {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long lecturerId = userRepository.findByEmail(userName).getId();
+        try {
+            roomScheduleService.deleteScheduleByLecturerId(lecturerId, id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Deleted"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (AccessDeniedException | InternalAuthenticationServiceException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Unexpected error occurred"));
+        }
+
+    }
+
+    @PutMapping("/updateBooking")
+    @PreAuthorize("hasRole('LECTURER')")
+    public ResponseEntity<?> updateRoomSchedule(@RequestParam Long id,
+                                                @RequestParam LocalDate date,
+                                                @RequestParam int startSession,
+                                                @RequestParam int endSession)
+    {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long lecturerId = userRepository.findByEmail(userName).getId();
+        try {
+            roomScheduleService.deleteScheduleByLecturerId(lecturerId, id);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (AccessDeniedException | InternalAuthenticationServiceException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Unexpected error occurred"));
+        }
+
+        Boolean isAvailable = roomScheduleService.isAvailableTime(lecturerId,
+                                                    date, startSession, endSession);
+        if (isAvailable)
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Success"));
+        else
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Schedule Overlapped"));
+
     }
 
     @PostMapping("/booking")
-    @PreAuthorize("hasRole('ROLE_LECTURER')")
-    public ResponseEntity<String> bookRoomSchedule(HttpServletRequest request,
+    @PreAuthorize("hasRole('LECTURER')")
+    public ResponseEntity<?> bookRoomSchedule(HttpServletRequest request,
                                                    @RequestBody BookingRequestDto bookingRequest)
     {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -105,7 +178,8 @@ public class RoomScheduleController {
                                                                 bookingRequest.getEndSession());
         try {
             RoomScheduleDto newRoomScheduleDto = roomScheduleService.createRoomSchedule(roomScheduleDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful!");
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(Map.of("message", "Success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Booking failed: " + e.getMessage());
         }
@@ -133,8 +207,6 @@ public class RoomScheduleController {
                                                                     @RequestParam("name") String name)
     {
         Long id = roomService.getIdByNameAndCampus(name, campus).getId();
-        System.out.println(id);
-
         return ResponseEntity.ok(roomScheduleService.getAvailableTimeOfRoom(date, id));
     }
 
@@ -161,55 +233,14 @@ public class RoomScheduleController {
 
         if (subject.isEmpty()) {
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(Map.of("message", "Not exist this subject"));
+                    .body(Map.of("subjectName", "Not exist this subject"));
         }
 
         return ResponseEntity.ok(Map.of("subjectName", subject.get().getSubjectName()));
     }
 
-    // @GetMapping("/date/{date}")
-    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByDate(
-    //         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDate(date);
-    //     return ResponseEntity.ok(schedules);
-    // }
-
-    // @GetMapping("/date-range")
-    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByWeek(
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDateRange(startDate, endDate);
-    //     return ResponseEntity.ok(schedules);
-    // }
-
-    // @GetMapping("/room/{roomId}/date-range")
-    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByRoomAndDateRange(
-    //         @PathVariable Long roomId,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByRoomAndDateRange(roomId, startDate, endDate);
-    //     return ResponseEntity.ok(schedules);
-    // }
-
-    // @GetMapping("/building/{building}/date-range")
-    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByBuildingAndDateRange(
-    //         @PathVariable String building,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByBuildingAndDateRange(building, startDate, endDate);
-    //     return ResponseEntity.ok(schedules);
-    // }
-
-    // @GetMapping("/date/{date}/sessions")
-    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByDateAndSessionRange(
-    //         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-    //         @RequestParam int startSession,
-    //         @RequestParam int endSession) {
-    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDateAndSessionRange(date, startSession, endSession);
-    //     return ResponseEntity.ok(schedules);
-    // }
-
-    @GetMapping("/filter")
+    
+    @PostMapping("/filter")
     public ResponseEntity<List<RoomScheduleDto>> filterSchedules(
             @RequestParam(required = false) Long roomId,
             @RequestParam(required = false) Long lecturerId,
@@ -244,7 +275,7 @@ public class RoomScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    @GetMapping("/quick-filter")
+    @PostMapping("/quick-filter")
     public ResponseEntity<List<RoomScheduleDto>> quickFilter(
             @RequestParam(required = true) String filterType) {
         
