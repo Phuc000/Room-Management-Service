@@ -1,4 +1,3 @@
----
 
 # Room Management System (ROMS)
 
@@ -9,7 +8,6 @@
 - [Prerequisites](#prerequisites)
 - [Setup and Installation](#setup-and-installation)
 - [Usage](#usage)
-- [API Endpoints](#api-endpoints)
 - [Environment Variables](#environment-variables)
 - [Build and Run](#build-and-run)
 - [License](#license)
