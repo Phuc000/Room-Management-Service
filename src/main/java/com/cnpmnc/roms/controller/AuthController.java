@@ -183,35 +183,36 @@ public class AuthController {
     }
 
     @PostMapping("/lecturer/signup")
-    public String registerLecturer(@RequestBody LecturerCreationDto lecturerCreationDto) {
+    public ResponseEntity<Map<String, String>> registerLecturer(@RequestBody LecturerCreationDto lecturerCreationDto) {
         if (userRepository.existsByEmail(lecturerCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Lecturer lecturer = LecturerMapper.mapToLecturer(lecturerCreationDto);
         lecturer.setPassword(encoder.encode(lecturer.getPassword()));
         lecturerRepository.save(lecturer);
-        return "Lecturer registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Lecturer registered successfully"));
+
     }
 
     @PostMapping("/student/signup")
-    public String registerStudent(@RequestBody StudentCreationDto studentCreationDto) {
+    public ResponseEntity<Map<String, String>> registerStudent(@RequestBody StudentCreationDto studentCreationDto) {
         if (userRepository.existsByEmail(studentCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Student student = StudentMapper.mapToStudent(studentCreationDto);
         student.setPassword(encoder.encode(student.getPassword()));
         studentRepository.save(student);
-        return "Student registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Student registered successfully"));
     }
 
     @PostMapping("/staff/signup")
-    public String registerStaff(@RequestBody StaffCreationDto staffCreationDto) {
+    public ResponseEntity<Map<String, String>> registerStaff(@RequestBody StaffCreationDto staffCreationDto) {
         if (userRepository.existsByEmail(staffCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Staff staff = StaffMapper.mapToStaff(staffCreationDto);
         staff.setPassword(encoder.encode(staff.getPassword()));
         staffRepository.save(staff);
-        return "Staff registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Staff registered successfully"));
     }
 }
