@@ -46,8 +46,8 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Use allowedOriginPatterns instead of allowedOrigins
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*")); // Allow all headers
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -58,28 +58,31 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
             .exceptionHandling(exceptionHandling
                     -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
             )
             .sessionManagement(sessionManagement
                     -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(authorizeHttpRequests
-                    -> authorizeHttpRequests
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/test/all",
-                                "/api/rooms/**",
-                                "/api/roomschedules/**",
-                                "/api/lecturers/**"
-                        ).permitAll()
-                        .requestMatchers(
-                            "/api/test/lecturer").hasAuthority("ROLE_LECTURER")
-                        .anyRequest().authenticated()
+            .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                .requestMatchers(
+                        "/api/auth/**",
+                        // "/api/test/all",
+                        // "/api/rooms/**"
+                        "/api/roomschedules/filter"
+                        // "/api/lecturers/**"
+                ).permitAll()
+                .requestMatchers("/api/test/lecturer"
+                ).hasRole("LECTURER") // đổi sang hasRole
+                .anyRequest().authenticated()
             );
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
+
 }

@@ -18,16 +18,15 @@ import com.cnpmnc.roms.repository.UserRepository;
 import com.cnpmnc.roms.security.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -83,16 +83,23 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> signOut(HttpServletResponse response) {
-        Cookie cookie = new Cookie("CredentialCookie", null); // This the right coockie?
+        Cookie cookie = new Cookie("CredentialCookie", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // Delete the cookie by setting maxAge to 0
 
-        response.addCookie(cookie);
+        response.setHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue() 
+            + "; Max-Age=" + cookie.getMaxAge() 
+            + "; Path=" + cookie.getPath() 
+            + "; HttpOnly"
+            + "; SameSite=None; Secure");
+        
+        // response.addCookie(cookie);
+        
         return ResponseEntity.ok("Logout successful!");
     }
 
-    @PostMapping("/login/guest")
+    @GetMapping("/login/guest")
     public ResponseEntity<?> authenticateGuest(HttpServletResponse response) {
         Map<String, Object> guestResponse = new HashMap<>();
         guestResponse.put("isGuest", true);
@@ -115,7 +122,7 @@ public class AuthController {
         
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        
+            
         // Create response object with user information
         Map<String, Object> userResponse = new HashMap<>();
         
@@ -160,44 +167,52 @@ public class AuthController {
         
         Cookie cookie = new Cookie("CredentialCookie", token);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
-        
-        response.addCookie(cookie);
+
+        response.setHeader("Set-Cookie", cookie.getName() + "=" + cookie.getValue() 
+            + "; Max-Age=" + cookie.getMaxAge() 
+            + "; Path=" + cookie.getPath() 
+            + "; HttpOnly"
+            + "; SameSite=None; Secure");
+
+        // response.addCookie(cookie);  
         
         return ResponseEntity.ok(userResponse);
     }
 
     @PostMapping("/lecturer/signup")
-    public String registerLecturer(@RequestBody LecturerCreationDto lecturerCreationDto) {
+    public ResponseEntity<Map<String, String>> registerLecturer(@RequestBody LecturerCreationDto lecturerCreationDto) {
         if (userRepository.existsByEmail(lecturerCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Lecturer lecturer = LecturerMapper.mapToLecturer(lecturerCreationDto);
         lecturer.setPassword(encoder.encode(lecturer.getPassword()));
         lecturerRepository.save(lecturer);
-        return "Lecturer registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Lecturer registered successfully"));
+
     }
 
     @PostMapping("/student/signup")
-    public String registerStudent(@RequestBody StudentCreationDto studentCreationDto) {
+    public ResponseEntity<Map<String, String>> registerStudent(@RequestBody StudentCreationDto studentCreationDto) {
         if (userRepository.existsByEmail(studentCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Student student = StudentMapper.mapToStudent(studentCreationDto);
         student.setPassword(encoder.encode(student.getPassword()));
         studentRepository.save(student);
-        return "Student registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Student registered successfully"));
     }
 
     @PostMapping("/staff/signup")
-    public String registerStaff(@RequestBody StaffCreationDto staffCreationDto) {
+    public ResponseEntity<Map<String, String>> registerStaff(@RequestBody StaffCreationDto staffCreationDto) {
         if (userRepository.existsByEmail(staffCreationDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
         Staff staff = StaffMapper.mapToStaff(staffCreationDto);
         staff.setPassword(encoder.encode(staff.getPassword()));
         staffRepository.save(staff);
-        return "Staff registered successfully";
+        return ResponseEntity.ok(Map.of("message", "Staff registered successfully"));
     }
 }

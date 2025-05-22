@@ -65,7 +65,7 @@ public class RoomScheduleController {
 //        return new ResponseEntity<>(newRoomScheduleDto, HttpStatus.CREATED);
 //    }
 
-    @PostMapping("/getschedule")
+    @GetMapping("/getschedule")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<RoomScheduleDto>> getRoomScheduleById() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -194,14 +194,14 @@ public class RoomScheduleController {
 //    }
 
 //    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ROLE_LECTURER')")
+//    @PreAuthorize("hasRole('LECTURER')")
 //    public ResponseEntity<RoomScheduleDto> updateRoomScheduleById(@PathVariable Long id, @RequestBody RoomScheduleDto updatedRoomScheduleDto) {
 //        RoomScheduleDto roomScheduleDto = roomScheduleService.updateRoomSchedule(id, updatedRoomScheduleDto);
 //        return ResponseEntity.ok(roomScheduleDto);
 //    }
 
-    @PostMapping("/available/{date}")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @GetMapping("/available/{date}")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
                                                                     @RequestParam("campus") String campus,
                                                                     @RequestParam("name") String name)
@@ -210,23 +210,23 @@ public class RoomScheduleController {
         return ResponseEntity.ok(roomScheduleService.getAvailableTimeOfRoom(date, id));
     }
 
-    @PostMapping("/buildingByCampus")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @GetMapping("/buildingByCampus")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam String campus)
     {
         return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
     }
 
-    @PostMapping("/nameByBuilding")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @GetMapping("/nameByBuilding")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
                                                            @RequestParam("campus") String campus)
     {
         return ResponseEntity.ok(roomService.getListNameByBuildingAndCampus(building, campus));
     }
 
-    @PostMapping("/getsubject/{subjectCode}")
-    // @PreAuthorize("hasRole('ROLE_LECTURER')")
+    @GetMapping("/getsubject/{subjectCode}")
+    // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> getSubjectName (@PathVariable("subjectCode") String subjectCode)
     {
         Optional<Subject> subject = subjectRepository.findBySubjectCode(subjectCode);
@@ -239,8 +239,49 @@ public class RoomScheduleController {
         return ResponseEntity.ok(Map.of("subjectName", subject.get().getSubjectName()));
     }
 
-    
-    @PostMapping("/filter")
+    // @GetMapping("/date/{date}")
+    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByDate(
+    //         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDate(date);
+    //     return ResponseEntity.ok(schedules);
+    // }
+
+    // @GetMapping("/date-range")
+    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByWeek(
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDateRange(startDate, endDate);
+    //     return ResponseEntity.ok(schedules);
+    // }
+
+    // @GetMapping("/room/{roomId}/date-range")
+    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByRoomAndDateRange(
+    //         @PathVariable Long roomId,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByRoomAndDateRange(roomId, startDate, endDate);
+    //     return ResponseEntity.ok(schedules);
+    // }
+
+    // @GetMapping("/building/{building}/date-range")
+    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByBuildingAndDateRange(
+    //         @PathVariable String building,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByBuildingAndDateRange(building, startDate, endDate);
+    //     return ResponseEntity.ok(schedules);
+    // }
+
+    // @GetMapping("/date/{date}/sessions")
+    // public ResponseEntity<List<RoomScheduleDto>> getSchedulesByDateAndSessionRange(
+    //         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+    //         @RequestParam int startSession,
+    //         @RequestParam int endSession) {
+    //     List<RoomScheduleDto> schedules = roomScheduleService.getSchedulesByDateAndSessionRange(date, startSession, endSession);
+    //     return ResponseEntity.ok(schedules);
+    // }
+
+    @GetMapping("/filter")
     public ResponseEntity<List<RoomScheduleDto>> filterSchedules(
             @RequestParam(required = false) Long roomId,
             @RequestParam(required = false) Long lecturerId,
@@ -275,7 +316,7 @@ public class RoomScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    @PostMapping("/quick-filter")
+    @GetMapping("/quick-filter")
     public ResponseEntity<List<RoomScheduleDto>> quickFilter(
             @RequestParam(required = true) String filterType) {
         
