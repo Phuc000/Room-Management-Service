@@ -24,9 +24,6 @@ public class RoomScheduleDto {
     private String campus;
     private String building;
     private String roomNumber;
-
-    public RoomScheduleDto() {
-    }
     
     public RoomScheduleDto(Long id, Long roomId, Long lecturerId, Long subjectId, 
                           LocalDate date, int startSession, int endSession) {

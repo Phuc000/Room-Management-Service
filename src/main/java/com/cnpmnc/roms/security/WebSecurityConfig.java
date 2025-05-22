@@ -74,7 +74,8 @@ public class WebSecurityConfig {
                         "/api/roomschedules/**",
                         "/api/lecturers/**"
                 ).permitAll()
-                .requestMatchers("/api/test/lecturer").hasRole("LECTURER") // đổi sang hasRole
+                .requestMatchers("/api/test/lecturer"
+                ).hasRole("LECTURER") // đổi sang hasRole
                 .anyRequest().authenticated()
             );
 

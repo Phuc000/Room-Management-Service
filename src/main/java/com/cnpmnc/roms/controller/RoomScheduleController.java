@@ -57,7 +57,7 @@ public class RoomScheduleController {
 //        return new ResponseEntity<>(newRoomScheduleDto, HttpStatus.CREATED);
 //    }
 
-    @PostMapping("/getschedule")
+    @GetMapping("/getschedule")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<RoomScheduleDto>> getRoomScheduleById() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -66,7 +66,7 @@ public class RoomScheduleController {
     }
 
 
-    @PostMapping("/isAvailable")
+    @GetMapping("/isAvailable")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Map<String, String>> checkRoomScheduleInfoById(HttpServletRequest request,
                                                            @RequestParam LocalDate date,
@@ -83,7 +83,7 @@ public class RoomScheduleController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("message", "Schedule overlapped"));
     }
 
-    @PostMapping("/booking")
+    @GetMapping("/booking")
     @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<String> bookRoomSchedule(HttpServletRequest request,
                                                    @RequestBody BookingRequestDto bookingRequest)
@@ -122,7 +122,7 @@ public class RoomScheduleController {
 //        return ResponseEntity.ok(roomScheduleDto);
 //    }
 
-    @PostMapping("/available/{date}")
+    @GetMapping("/available/{date}")
     // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
                                                                     @RequestParam("campus") String campus,
@@ -134,14 +134,14 @@ public class RoomScheduleController {
         return ResponseEntity.ok(roomScheduleService.getAvailableTimeOfRoom(date, id));
     }
 
-    @PostMapping("/buildingByCampus")
+    @GetMapping("/buildingByCampus")
     // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam String campus)
     {
         return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
     }
 
-    @PostMapping("/nameByBuilding")
+    @GetMapping("/nameByBuilding")
     // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
                                                            @RequestParam("campus") String campus)
@@ -149,7 +149,7 @@ public class RoomScheduleController {
         return ResponseEntity.ok(roomService.getListNameByBuildingAndCampus(building, campus));
     }
 
-    @PostMapping("/getsubject/{subjectCode}")
+    @GetMapping("/getsubject/{subjectCode}")
     // @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> getSubjectName (@PathVariable("subjectCode") String subjectCode)
     {
@@ -220,7 +220,7 @@ public class RoomScheduleController {
             @RequestParam(required = false) Integer weekNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+        System.out.println(">> filterSchedules invoked <<");
         // Handle "current week" request
         if (weekNumber != null && weekNumber == 0) {
             LocalDate now = LocalDate.now();
