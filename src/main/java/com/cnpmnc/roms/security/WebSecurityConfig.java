@@ -68,11 +68,11 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(
-                        "/api/auth/**",
-                        "/api/test/all",
-                        "/api/rooms/**",
-                        "/api/roomschedules/**",
-                        "/api/lecturers/**"
+                        "/api/auth/login/**"
+                        // "/api/test/all",
+                        // "/api/rooms/**",
+                        // "/api/roomschedules/**",
+                        // "/api/lecturers/**"
                 ).permitAll()
                 .requestMatchers("/api/test/lecturer"
                 ).hasRole("LECTURER") // đổi sang hasRole

@@ -99,7 +99,7 @@ public class AuthController {
         return ResponseEntity.ok("Logout successful!");
     }
 
-    @PostMapping("/login/guest")
+    @GetMapping("/login/guest")
     public ResponseEntity<?> authenticateGuest(HttpServletResponse response) {
         Map<String, Object> guestResponse = new HashMap<>();
         guestResponse.put("isGuest", true);

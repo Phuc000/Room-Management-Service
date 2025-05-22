@@ -220,7 +220,7 @@ public class RoomScheduleController {
             @RequestParam(required = false) Integer weekNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        System.out.println(">> filterSchedules invoked <<");
+        // System.out.println(">> filterSchedules invoked <<");
         // Handle "current week" request
         if (weekNumber != null && weekNumber == 0) {
             LocalDate now = LocalDate.now();
