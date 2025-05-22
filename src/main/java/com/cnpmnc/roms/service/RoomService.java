@@ -10,6 +10,8 @@ public interface RoomService {
 
     List<RoomDto> getAllRooms();
 
+    List<String> getAllBuildings();
+
     RoomDto getRoomById(Long id);
 
     List<String> getListBuildingByCampus(String campus);

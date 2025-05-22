@@ -36,6 +36,16 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<String> getAllBuildings() {
+        List<Room> rooms = roomRepository.findAll();
+        List<String> buildings = rooms.stream()
+                .map(Room::getBuilding)
+                .distinct()
+                .collect(Collectors.toList());
+        return buildings;
+    }
+
+    @Override
     public RoomDto getRoomById(Long id) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(()

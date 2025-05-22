@@ -201,7 +201,7 @@ public class RoomScheduleController {
 //    }
 
     @GetMapping("/available/{date}")
-    // @PreAuthorize("hasRole('LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<Integer>> getInformationByDateAndId (@PathVariable("date") LocalDate date,
                                                                     @RequestParam("campus") String campus,
                                                                     @RequestParam("name") String name)
@@ -211,22 +211,34 @@ public class RoomScheduleController {
     }
 
     @GetMapping("/buildingByCampus")
-    // @PreAuthorize("hasRole('LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<Set<String>> getBuildingInCampus (@RequestParam String campus)
     {
         return ResponseEntity.ok(new HashSet<>(roomService.getListBuildingByCampus(campus)));
     }
 
     @GetMapping("/nameByBuilding")
-    // @PreAuthorize("hasRole('LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<List<String>> getNameInBuilding (@RequestParam("building") String building,
                                                            @RequestParam("campus") String campus)
     {
         return ResponseEntity.ok(roomService.getListNameByBuildingAndCampus(building, campus));
     }
 
+    @GetMapping("/getsubjectcodes")
+    @PreAuthorize("hasRole('LECTURER')")
+    public ResponseEntity<?> getAllSubjectName ()
+    {
+        List<Subject> subjects = subjectRepository.findAll();
+        List<String> subjectCodes = new ArrayList<>();
+        for (Subject subject : subjects) {
+            subjectCodes.add(subject.getSubjectCode());
+        }
+        return ResponseEntity.ok(Map.of("subjectCodes", subjectCodes));
+    }
+
     @GetMapping("/getsubject/{subjectCode}")
-    // @PreAuthorize("hasRole('LECTURER')")
+    @PreAuthorize("hasRole('LECTURER')")
     public ResponseEntity<?> getSubjectName (@PathVariable("subjectCode") String subjectCode)
     {
         Optional<Subject> subject = subjectRepository.findBySubjectCode(subjectCode);
