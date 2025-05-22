@@ -1,6 +1,7 @@
 package com.cnpmnc.roms.service.impl;
 
 import com.cnpmnc.roms.dto.RoomScheduleDto;
+import com.cnpmnc.roms.entity.BaseUser;
 import com.cnpmnc.roms.entity.Lecturer;
 import com.cnpmnc.roms.entity.Room;
 import com.cnpmnc.roms.entity.RoomSchedule;
@@ -14,20 +15,16 @@ import com.cnpmnc.roms.repository.RoomScheduleRepository;
 import com.cnpmnc.roms.repository.SubjectRepository;
 import com.cnpmnc.roms.service.RoomScheduleService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 
 @Service
@@ -182,9 +179,9 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
                 Long roomId, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
                 LocalDate startDate, LocalDate endDate, Integer startSession, Integer endSession,
                 int page, int size) {
-        
+
         List<RoomSchedule> schedules;
-        
+
         Specification<RoomSchedule> spec = Specification.where(null);
         
         if (roomId != null) {
@@ -243,9 +240,30 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         Page<RoomSchedule> result = roomScheduleRepository.findAll(spec, pageable);
         schedules = result.getContent();
         
-        return schedules.stream()
-                .map(RoomScheduleMapper::mapToRoomScheduleDto)
-                .collect(Collectors.toList());
+        return schedules.stream().map(schedule -> {
+            // First map to DTO
+            RoomScheduleDto dto = RoomScheduleMapper.mapToRoomScheduleDto(schedule);
+            
+            // Then enrich the DTO with additional information
+            Room room = schedule.getRoom(); // Use the already loaded room from the entity relationship
+            if (room != null) {
+                dto.setCampus(room.getCampus());
+                dto.setBuilding(room.getBuilding());
+                dto.setRoomNumber(room.getName());
+            }
+            
+            BaseUser lecturer = schedule.getLecturer(); // Use the already loaded lecturer
+            if (lecturer != null) {
+                dto.setLecturerName(lecturer.getFirstName() + " " + lecturer.getLastName());
+            }
+            
+            Subject subject = schedule.getSubject(); // Use the already loaded subject
+            if (subject != null) {
+                dto.setSubjectName(subject.getSubjectName());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
         }
 
     @Override
