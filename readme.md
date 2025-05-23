@@ -2,15 +2,17 @@
 # Room Management System (ROMS)
 
 ## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Prerequisites](#prerequisites)
-- [Setup and Installation](#setup-and-installation)
-- [Usage](#usage)
-- [Environment Variables](#environment-variables)
-- [Build and Run](#build-and-run)
-- [License](#license)
+- [Room Management System (ROMS)](#room-management-system-roms)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Technologies Used](#technologies-used)
+  - [Prerequisites](#prerequisites)
+  - [Setup and Installation](#setup-and-installation)
+  - [Usage](#usage)
+  - [Environment Variables](#environment-variables)
+  - [Build and Run](#build-and-run)
+  - [License](#license)
 
 ---
 
