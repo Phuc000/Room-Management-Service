@@ -4,6 +4,7 @@ import com.cnpmnc.roms.service.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -61,22 +62,22 @@ public class WebSecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .exceptionHandling(exceptionHandling
-                    -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
+                -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
             )
             .sessionManagement(sessionManagement
-                    -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                .requestMatchers(
-                        "/api/auth/**",
-                        // "/api/test/all",
-                        // "/api/rooms/**"
-                        "/api/roomschedules/filter"
-                        // "/api/lecturers/**"
-                ).permitAll()
-                .requestMatchers("/api/test/lecturer"
-                ).hasRole("LECTURER") // đổi sang hasRole
-                .anyRequest().authenticated()
+            .requestMatchers(
+                "/api/auth/**",
+                // "/api/test/all",
+                // "/api/rooms/**"
+                "/api/roomschedules/filter",
+                "/api/test/lecturer"
+                // "/api/lecturers/**"
+            ).permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permit all CORS preflight requests
+            .anyRequest().authenticated()
             );
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
