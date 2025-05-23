@@ -105,10 +105,10 @@ public class RoomScheduleController {
 //    }
 
     @DeleteMapping("/deletebooking")
-    @PreAuthorize("hashRole('LECTURER')")
+    // @PreAuthorize("hashRole('LECTURER')")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> deleteRoomSchedule(@RequestParam Long id)
     {
-        System.out.println(">> deleteRoomSchedule called <<");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Long lecturerId = userRepository.findByEmail(userName).getId();
         try {
