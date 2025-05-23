@@ -104,10 +104,11 @@ public class RoomScheduleController {
 //        }
 //    }
 
-    @DeleteMapping
-    @PreAuthorize("hasRole('LECTURER')")
+    @DeleteMapping("/deletebooking")
+    @PreAuthorize("hashRole('LECTURER')")
     public ResponseEntity<?> deleteRoomSchedule(@RequestParam Long id)
     {
+        System.out.println(">> deleteRoomSchedule called <<");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Long lecturerId = userRepository.findByEmail(userName).getId();
         try {
@@ -295,7 +296,7 @@ public class RoomScheduleController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<RoomScheduleDto>> filterSchedules(
-            @RequestParam(required = false) Long roomId,
+            @RequestParam(required = false) String roomNumber,
             @RequestParam(required = false) Long lecturerId,
             @RequestParam(required = false) Long subjectId,
             @RequestParam(required = false) String building,
@@ -322,7 +323,7 @@ public class RoomScheduleController {
         }
         
         List<RoomScheduleDto> schedules = roomScheduleService.filterSchedules(
-                roomId, lecturerId, subjectId, building, campus, floor,
+                roomNumber, lecturerId, subjectId, building, campus, floor,
                 startDate, endDate, startSession, endSession, page, size);
         
         return ResponseEntity.ok(schedules);

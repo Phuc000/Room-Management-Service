@@ -34,7 +34,7 @@ public interface RoomScheduleService {
     List<RoomScheduleDto> getSchedulesByLecturerIdAndDateRange(Long lecturerId, LocalDate startDate, LocalDate endDate);
 
     List<RoomScheduleDto> filterSchedules(
-        Long roomId, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
+        String roomName, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
         LocalDate startDate, LocalDate endDate, Integer startSession, Integer endSession,
         int page, int size);
 

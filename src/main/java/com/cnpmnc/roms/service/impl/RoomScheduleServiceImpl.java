@@ -183,7 +183,7 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
 
         @Override
         public List<RoomScheduleDto> filterSchedules(
-                Long roomId, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
+                String roomName, Long lecturerId, Long subjectId, String building, String campus, Integer floor,
                 LocalDate startDate, LocalDate endDate, Integer startSession, Integer endSession,
                 int page, int size) {
         
@@ -191,8 +191,8 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
         
         Specification<RoomSchedule> spec = Specification.where(null);
         
-        if (roomId != null) {
-                spec = spec.and((root, query, cb) -> cb.equal(root.get("room").get("id"), roomId));
+        if (roomName != null) {
+                spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("room").get("name")), "%" + roomName.toLowerCase() + "%"));
         }
         
         if (lecturerId != null) {
@@ -257,6 +257,7 @@ public class RoomScheduleServiceImpl implements RoomScheduleService {
                 dto.setCampus(room.getCampus());
                 dto.setBuilding(room.getBuilding());
                 dto.setRoomNumber(room.getName());
+                dto.setRoomId(room.getId());
             }
 
             BaseUser lecturer = schedule.getLecturer(); // Use the already loaded lecturer
